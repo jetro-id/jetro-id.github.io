@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>System Rebellion Secure Broadcast</title>
+      <title>System Rebellion Secure Link</title>
       <style>
       	/* No secrets here, so don't bother looking! */
       	body{
@@ -60,6 +60,10 @@
 			outline: none;
 			background: #3f3f3f;
 			color: #3f3f3f;
+      	}
+      	a {
+      		color:#1919FF;
+			text-shadow: 1px 1px 6px #3333FF;
       	}
       </style>
    </head>
@@ -251,6 +255,7 @@ commands.solve = function(input) {
 	if (input[0] && input[0] === "1") {
 		if (input[1]) {
 			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
 			//Verify the input
 			var xhr = new XMLHttpRequest();
 			/* TODO: Move this to day 1 */
@@ -258,7 +263,10 @@ commands.solve = function(input) {
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
 					//Everything successful and OK
-					print(xhr.responseText);
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
 					enablePrompt();
 				} else if(xhr.readyState == XMLHttpRequest.DONE) {
 					//Some kind of network error
@@ -282,33 +290,24 @@ commands.solve = function(input) {
 
 dayone = function(input) {
 
+	var dayonecont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/MVZA88">https://scrap.tf/raffles/MVZA88</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
 	var dayonemessages = [
 	{text:" ​ ", delay: 0, idelay: 10, new:true},
 	{text:"Glad to have you on our side!", delay: 0, idelay: 10, new:true},
-	{text:"Your first task is simple and will prove your allegiance.", delay: 0, idelay: 10, new:true},
+	{text:"Your first task is simple.", delay: 0, idelay: 10, new:true},
 	{text:" ​ ", delay: 0, idelay: 10, new:true},
-	{text:"Create a raffle with the title \"SYSTEM REBELLION\".", delay: 0, idelay: 10, new:true},
-	{text:"The raffle contents should be 1x CONCHEROR.", delay: 0, idelay: 10, new:true},
-	{text:"Write in the description that THE SYSTEM is a cult.", delay: 0, idelay: 10, new:true},
-	{text:"Make sure the raffle has at least 100,000 possible entries and lasts a full day!", delay: 0, idelay: 10, new:true},
-	{text:"That'll give our AGENT enough time to see your contribution and NOTE it.", delay: 0, idelay: 10, new:true},
-	{text:"If you followed our earlier instructions, you might have done this already. If so, great job!", delay: 0, idelay: 10, new:true},
-	{text:" ​ ", delay: 0, idelay: 10, new:true},
-	{text:"Once THE AGENT tells you that your contribution has been noted, you can begin to solve the puzzle:", delay: 0, idelay: 10, new:true},
-	{text:"We need a Mike Delta Fiver of your profile ID and the ID of the raffle you created.", delay: 0, idelay: 10, new:true},
-	{text:"You can get those both from the URL bar!", delay: 0, idelay: 10, new:true},
-	{text:"Append the two IDs together and get your Mike Delta Fiver from that.", delay: 0, idelay: 10, new:true},
-	{text:"Make sure not to add any spaces or anything like that!", delay: 0, idelay: 10, new:true},
-	{text:" ​ ", delay: 0, idelay: 10, new:true},
-	{text:"As an example, our AGENT's ID is 8166, and the raffle they created had the ID of YIO9M1.", delay: 0, idelay: 10, new:true},
-	{text:"So our  Mike Delta Fiver for that would be bec28a5fa7764e34cb6de63e6726720b", delay: 0, idelay: 10, new:true},
-	{text:" ​ ", delay: 0, idelay: 10, new:true},
-	{text:"Once you got your Mike Delta Fiver, type the following:", delay: 0, idelay: 10, new:true},
-	{text:"solve 1 [Your Mike Delta Fiver]", delay: 0, idelay: 10, new:true},
-	{text:"eg: solve 1 07ec3f0b8a8b7714326fb65286106878", delay: 0, idelay: 10, new:true}
-	];
-	printMessage(document.getElementById("history"),dayonemessages,enablePrompt);
+	{text:"Prove your allegiance.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),dayonemessages,dayonecont);
 }
+commands["01"] = dayone;
 commands["1"] = dayone;
 commands.day1 = dayone;
 commands.dayone = dayone;
@@ -337,8 +336,7 @@ window.onload = function () {
 	document.getElementById("data").onkeyup = writeInput;
 	document.getElementById("data").oninput = writeInput;
 	document.getElementById("data").focus();
-	/* printMessage(document.getElementById("history"),messages, enablePrompt); */
-	enablePrompt();
+	printMessage(document.getElementById("history"),messages, enablePrompt);
 };
 </script>
    </body>
