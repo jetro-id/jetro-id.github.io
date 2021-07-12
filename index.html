@@ -228,7 +228,7 @@ var enterPressed = function() {
 
 	writeHistory();
 
-	var splitTyped = userTyped.trim().replace(/\s\s+/g, ' ').split(" ");
+	var splitTyped = userTyped.trim().replace(/\s\s+/g, ' ').replace(/​/g, ' ').split(" ");
 	determineCommand(splitTyped);
 }
 var getTimeStamp = function(time, delim, noSeconds) {
@@ -384,7 +384,8 @@ window.onload = function () {
 	document.getElementById("data").onkeyup = writeInput;
 	document.getElementById("data").oninput = writeInput;
 	document.getElementById("data").focus();
-	printMessage(document.getElementById("history"),messages, enablePrompt);
+	/* printMessage(document.getElementById("history"),messages, enablePrompt); */
+	enablePrompt();
 };
 </script>
    </body>
