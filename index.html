@@ -106,7 +106,7 @@ var messages = [
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
 	{text:"Welcome to the system rebellion, Soldier.", delay: 150, idelay: 0, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
-	{text:"There are currently [1] day(s) unlocked.", delay: 150, idelay: 10, new:true},
+	{text:"There are currently [2] day(s) unlocked.", delay: 150, idelay: 10, new:true},
 	{text:"Which day would you like to view?", delay: 100, idelay: 10, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true}
 ];
@@ -228,7 +228,6 @@ var enterPressed = function() {
 
 	writeHistory();
 
-	/* TODO: Interpret what the user wrote and execute it */
 	var splitTyped = userTyped.trim().replace(/\s\s+/g, ' ').split(" ");
 	determineCommand(splitTyped);
 }
@@ -258,7 +257,6 @@ commands.solve = function(input) {
 			print(" ​ ");
 			//Verify the input
 			var xhr = new XMLHttpRequest();
-			/* TODO: Move this to day 1 */
 			xhr.open("GET", 'https://system-rebellion.herokuapp.com/dayone/' + input[1], true);
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
@@ -281,7 +279,34 @@ commands.solve = function(input) {
 			print("error: command not found: solve " + input.join(" "));
 			enablePrompt();
 		}
-
+	} else if(input[0] && input[0] === "2") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/daytwo/' + input[1], true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		} else {
+			print("error: command not found: solve " + input.join(" "));
+			enablePrompt();
+		}
 	} else {
 		print("error: command not found: solve " + input.join(" "));
 		enablePrompt();
@@ -307,10 +332,29 @@ dayone = function(input) {
 
 	printMessage(document.getElementById("history"),dayonemessages,dayonecont);
 }
-commands["01"] = dayone;
-commands["1"] = dayone;
-commands.day1 = dayone;
-commands.dayone = dayone;
+daytwo = function(input) {
+
+	var daytwocont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/KDZPCW">https://scrap.tf/raffles/KDZPCW</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var daytwomessages= [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Good job getting this far!", delay: 0, idelay: 10, new:true},
+	{text:"...you did complete day one, didn't you?", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Your next task is an act of reconnaissance.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),daytwomessages,daytwocont);
+}
+commands["02"] = daytwo;
+commands["2"] = daytwo;
+commands.day2 = daytwo;
+commands.daytwo = daytwo;
 
 window.onload = function () {
 	setTime();
