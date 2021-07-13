@@ -106,7 +106,7 @@ var messages = [
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
 	{text:"Welcome to the system rebellion, Soldier.", delay: 150, idelay: 0, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
-	{text:"There are currently [2] day(s) unlocked.", delay: 150, idelay: 10, new:true},
+	{text:"There are currently [3] day(s) unlocked.", delay: 150, idelay: 10, new:true},
 	{text:"Which day would you like to view?", delay: 100, idelay: 10, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true}
 ];
@@ -307,6 +307,33 @@ commands.solve = function(input) {
 			print("error: command not found: solve " + input.join(" "));
 			enablePrompt();
 		}
+	}else if(input[0] && input[0] === "3") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+
+			var trimmed = input[1].replace("https://scrap.tf/raffles/","");
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/daythree/' + trimmed, true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		}
 	} else {
 		print("error: command not found: solve " + input.join(" "));
 		enablePrompt();
@@ -359,6 +386,30 @@ commands["02"] = daytwo;
 commands["2"] = daytwo;
 commands.day2 = daytwo;
 commands.daytwo = daytwo;
+
+daythree = function(input) {
+
+	var daythreecont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/TW2NSZ">https://scrap.tf/raffles/TW2NSZ</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var daythreemessages= [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"The system has been quiet recently, and our recruits are getting restless.", delay: 0, idelay: 10, new:true},
+	{text:"We'll need to do something about morale.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Your next task is an act of charity.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),daythreemessages,daythreecont);
+}
+commands["03"] = daythree;
+commands["3"] = daythree;
+commands.day3 = daythree;
+commands.daythree = daythree;
 
 window.onload = function () {
 	setTime();
