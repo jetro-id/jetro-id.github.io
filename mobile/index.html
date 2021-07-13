@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>System Rebellion Secure Link</title>
+      <style>
+      	/* No secrets here, so don't bother looking! */
+      	body{
+			font-family: monospace;
+			background:#000;
+			color:#00B200;
+			text-shadow: 1px 1px 6px #0C0;
+			overflow-wrap: break-word;
+			width: 100vw;
+			height: 100vh;
+			overflow-x: hidden;
+			margin: 0px;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+		@keyframes flash {
+			0% {
+		    	opacity: 0.0;
+			}
+			50% {
+			    opacity: 1.0;
+			}
+			100% {
+			    opacity: 0.0;
+			}
+		}
+		@-webkit-keyframes flash {
+			0% {
+		    	opacity: 0.0;
+			}
+			50% {
+			    opacity: 1.0;
+			}
+			100% {
+			    opacity: 0.0;
+			}
+		}
+      	p{
+      		line-height: 1.3;
+      		margin:0;
+      	}
+      	a {
+      		color:#1919FF;
+			text-shadow: 1px 1px 6px #3333FF;
+      	}
+      </style>
+   </head>
+   <body>
+   	<!-- No secrets here, so don't bother looking! !-->
+   	<div id="terminal-container">
+   		<div id="history">
+		</div>
+		<div id="prompt" style="display: none;">
+			<p>
+				<span><span id="time">00:00:00</span> user@system-rebellion$</span>
+				<input id="data" type="text" autocapitalize="none" spellcheck="false"/>
+				<input id="go" type="button" value="Go!" onclick="enterPressed()"/>
+			</p>
+		</div>
+   	</div>
+
+<script>
+/* No secrets here, so don't bother looking ! */
+var messages = [
+	{text:"----------------------", delay: 0, idelay: 10},
+	{text:"ESTABLISHING ENCRYPTED LINK", delay: 100, idelay: 10, new:true},
+	{text:"----------------------", delay: 10, idelay: 10, new:true},
+	{text:" ​ ", delay: 150, idelay: 0, new:true},
+	{text:"Creating Salt", delay: 1000, idelay: 0, new:true},
+	{text:"...", delay: 500, idelay: 500},
+	{text:"DONE", delay: 500, idelay: 0},
+	{text:"Calculating Hash", delay: 1000, idelay: 0, new:true},
+	{text:"...", delay: 500, idelay: 500},
+	{text:"DONE", delay: 500, idelay: 0},
+	{text:"Exchanging Key", delay: 1000, idelay: 0, new:true},
+	{text:"...", delay: 500, idelay: 500},
+	{text:"DONE", delay: 500, idelay: 0},
+	{text:"SYN", delay: 1000, idelay: 0, new:true},
+	{text:"SYN-ACK", delay: 500, idelay: 0, new:true},
+	{text:"ACK-ACK", delay: 500, idelay: 0, new:true},
+	{text:" ​ ", delay: 150, idelay: 0, new:true},
+	{text:"----------------------", delay: 1000, idelay: 10, new:true},
+	{text:"LINK ESTABLISHED", delay: 100, idelay: 10, new:true},
+	{text:"----------------------", delay: 100, idelay: 1, new:true},
+	{text:" ​ ", delay: 150, idelay: 0, new:true},
+	{text:"Welcome to the system rebellion, Soldier.", delay: 150, idelay: 0, new:true},
+	{text:" ​ ", delay: 150, idelay: 0, new:true},
+	{text:"There are currently [3] day(s) unlocked.", delay: 150, idelay: 10, new:true},
+	{text:"Which day would you like to view?", delay: 100, idelay: 10, new:true},
+	{text:" ​ ", delay: 150, idelay: 0, new:true}
+];
+function printMessage(prompt, messageList, callback){
+	var messageIndex = 0;
+	var textIndex = 0;
+	var message = messageList[messageIndex];
+	var text = message.text;
+
+	var p = document.createElement("p");
+	prompt.appendChild(p);
+
+	var handleChar = function() {
+		p.textContent += text[textIndex];
+		if (textIndex < text.length - 1) {
+			textIndex++;
+			setTimeout(function() {
+				return handleChar();
+			}, message.idelay);
+		} else if (messageIndex < messageList.length - 1) {
+			messageIndex++;
+			message = messageList[messageIndex];
+			text = message.text;
+			textIndex = 0;
+			if(message.new === true) {
+				p = document.createElement("p");
+				prompt.appendChild(p);
+			}
+			setTimeout(function() {
+				return handleChar();
+			}, message.delay);
+		} else if (messageIndex === messageList.length - 1
+			&& textIndex === text.length - 1) {
+			callback();
+		}
+	}
+
+	handleChar();
+
+}
+var htmlEntities = function(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+var scrollToBottom = function() {
+	var element = document.getElementById("terminal-container");
+	element.scrollTop = element.scrollHeight;
+}
+var print = function(text, append) {
+	var history = document.getElementById("history");
+	if (!append) {
+		var container = document.createElement("p");
+		container.textContent = text;
+		history.appendChild(container);
+	} else {
+		var container = history.lastChild;
+		container.innerHTML += htmlEntities(text);
+	}
+	scrollToBottom();
+}
+
+var printUnsafe = function(text, append) {
+	var history = document.getElementById("history");
+	if (!append) {
+		var container = document.createElement("p");
+		container.innerHTML = text;
+		history.appendChild(container);
+	} else {
+		var container = history.lastChild;
+		container.innerHTML += text;
+	}
+	scrollToBottom();
+}
+function enablePrompt() {
+	var prompt = document.getElementById("prompt");
+	document.getElementById("data").value = "";
+	prompt.style.display = "block";
+	document.getElementById("data").focus();
+	scrollToBottom();
+}
+var writeHistory = function() {
+	// create a simple copy of the current state of the prompt
+	// and write it to the history.
+	var oldTime = document.getElementById("time").textContent;
+	userTyped = document.getElementById("data").value;
+
+	// add the prompt to the 'output history'
+	printUnsafe(oldTime + " user@system-rebellion$ <pre style='display:inline;'>"+htmlEntities(userTyped)+"</pre>");
+
+	document.getElementById("data").value = "";
+}
+var determineCommand = function(input) {
+	var commandPart = input.shift();
+	var command = commands[commandPart];
+
+	if (commandPart !== undefined && commandPart.trim().length === 0) {
+		enablePrompt();
+	} else if (command === undefined) {
+		//User didn't type a valid command
+		print("error: command not found: " + userTyped);
+		enablePrompt();
+	} else {
+		//execute command on input
+		command(input);
+	}
+}
+
+var enterPressed = function() {
+	// hide the prompt (needs to be hidden whilst  commands are executing)
+	var prompt = document.getElementById("prompt");
+	prompt.style.display = "none";
+
+	writeHistory();
+
+	var splitTyped = userTyped.trim().replace(/\s\s+/g, ' ').replace(/​/g, ' ').split(" ");
+	determineCommand(splitTyped);
+}
+var getTimeStamp = function(time, delim, noSeconds) {
+	time = time || new Date();
+	delim = delim || ":";
+	var hour = time.getHours();
+	hour = hour < 10 ? "0" + hour : hour;
+	var minute = time.getMinutes();
+	minute = minute < 10 ? "0" + minute : minute;
+	var second = time.getSeconds();
+	second = second < 10 ? "0" + second : second;
+	var ending = noSeconds ? "" : delim + second;
+	return hour + delim + minute + ending;
+}
+var setTime = function() {
+	var str = getTimeStamp();
+	document.getElementById("time").textContent = str;
+	window.setTimeout(setTime,500);
+}
+var commands = {};
+
+commands.solve = function(input) {
+	if (input[0] && input[0] === "1") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/dayone/' + input[1], true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		} else {
+			print("error: command not found: solve " + input.join(" "));
+			enablePrompt();
+		}
+	} else if(input[0] && input[0] === "2") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/daytwo/' + input[1], true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		} else {
+			print("error: command not found: solve " + input.join(" "));
+			enablePrompt();
+		}
+	}else if(input[0] && input[0] === "3") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+
+			var trimmed = input[1].replace("https://scrap.tf/raffles/","");
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/daythree/' + trimmed, true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		}
+	} else {
+		print("error: command not found: solve " + input.join(" "));
+		enablePrompt();
+	}
+}
+
+dayone = function(input) {
+
+	var dayonecont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/MVZA88">https://scrap.tf/raffles/MVZA88</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var dayonemessages = [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Glad to have you on our side!", delay: 0, idelay: 10, new:true},
+	{text:"Your first task is simple.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Prove your allegiance.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),dayonemessages,dayonecont);
+}
+commands["01"] = dayone;
+commands["1"] = dayone;
+commands.day1 = dayone;
+commands.dayone = dayone;
+daytwo = function(input) {
+
+	var daytwocont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/KDZPCW">https://scrap.tf/raffles/KDZPCW</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var daytwomessages= [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Good job getting this far!", delay: 0, idelay: 10, new:true},
+	{text:"...you did complete day one, didn't you?", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Your next task is an act of reconnaissance.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),daytwomessages,daytwocont);
+}
+commands["02"] = daytwo;
+commands["2"] = daytwo;
+commands.day2 = daytwo;
+commands.daytwo = daytwo;
+
+daythree = function(input) {
+
+	var daythreecont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/TW2NSZ">https://scrap.tf/raffles/TW2NSZ</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var daythreemessages= [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"The system has been quiet recently, and our recruits are getting restless.", delay: 0, idelay: 10, new:true},
+	{text:"We'll need to do something about morale.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"Your next task is an act of charity.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),daythreemessages,daythreecont);
+}
+commands["03"] = daythree;
+commands["3"] = daythree;
+commands.day3 = daythree;
+commands.daythree = daythree;
+
+window.onload = function () {
+	setTime();
+	document.body.onclick = function(){
+		window.setTimeout(function(){
+			document.getElementById("data").focus();
+		},100)
+	}
+	printMessage(document.getElementById("history"),messages, enablePrompt);
+};
+</script>
+   </body>
+</html>
