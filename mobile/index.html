@@ -89,7 +89,7 @@ var messages = [
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
 	{text:"Welcome to the system rebellion, Soldier.", delay: 150, idelay: 0, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true},
-	{text:"There are currently [3] day(s) unlocked.", delay: 150, idelay: 10, new:true},
+	{text:"There are currently [4] day(s) unlocked.", delay: 150, idelay: 10, new:true},
 	{text:"Which day would you like to view?", delay: 100, idelay: 10, new:true},
 	{text:" ​ ", delay: 150, idelay: 0, new:true}
 ];
@@ -309,6 +309,32 @@ commands.solve = function(input) {
 			}
 			xhr.send(null);
 		}
+	} else if(input[0] && input[0] === "4") {
+		if (input[1]) {
+			print("Verifying your input...this may take a little while.");
+			print(" ​ ");
+
+			//Verify the input
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'https://system-rebellion.herokuapp.com/dayfour/' + input[1], true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+					//Everything successful and OK
+					var response = xhr.responseText.split("<br>");
+					for (var i = 0; i < response.length; i++) {
+						printUnsafe(response[i]);
+					}
+					enablePrompt();
+				} else if(xhr.readyState == XMLHttpRequest.DONE) {
+					//Some kind of network error
+					print("Sorry, something went wrong. Please notify me:");
+					print("https://scrap.tf/profile/8166");
+					print("In the meantime, maybe try again in a few minutes?");
+					enablePrompt();
+				}
+			}
+			xhr.send(null);
+		}
 	} else {
 		print("error: command not found: solve " + input.join(" "));
 		enablePrompt();
@@ -385,6 +411,30 @@ commands["03"] = daythree;
 commands["3"] = daythree;
 commands.day3 = daythree;
 commands.daythree = daythree;
+
+dayfour = function(input) {
+
+	var dayfourcont = function() {
+		printUnsafe('<a href="https://scrap.tf/raffles/SFBWPY">https://scrap.tf/raffles/SFBWPY</a>');
+		print(" ​ ")
+		enablePrompt();
+	}
+
+	var dayfourmessages= [
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"The system stopped our broadcasts from getting through for the past few days.", delay: 0, idelay: 10, new:true},
+	{text:"Luckily, we intercepted a message of theirs.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true},
+	{text:"We need you to decode it.", delay: 0, idelay: 10, new:true},
+	{text:" ​ ", delay: 0, idelay: 10, new:true}
+	]
+
+	printMessage(document.getElementById("history"),dayfourmessages,dayfourcont);
+}
+commands["04"] = dayfour;
+commands["4"] = dayfour;
+commands.day4 = dayfour;
+commands.dayfour = dayfour;
 
 window.onload = function () {
 	setTime();
